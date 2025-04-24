@@ -9,8 +9,7 @@ import hashlib
 from datetime import datetime
 import pandas as pd
 import requests
-
-
+import os
 
 # Initialize database connection
 conn = sqlite3.connect("patients.db")
@@ -89,9 +88,15 @@ def load_model():
     url = "https://drive.google.com/uc?export=download&id=1Rs57tU96OtOIu4iUvLn4Ml8RYmYNJW6W"
     response = requests.get(url)
     response.raise_for_status()  # Raise error if download fails
+    
+    model_file = 'model.h5'
+    with open(model_file, 'wb') as f:
+        f.write(response.content)
 
-    model = tf.keras.models.load_model(BytesIO(response.content))
+    model = tf.keras.models.load_model(model_file)
+    os.remove(model_file)  # Clean up the model file after loading
     return model
+
 # Function to preprocess the image step-by-step
 def preprocess_image(image):
     # Stage 1: Grayscale Conversion
@@ -203,6 +208,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
