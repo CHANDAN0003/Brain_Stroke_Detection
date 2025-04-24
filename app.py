@@ -83,19 +83,32 @@ def predict_stroke(image):
     # Placeholder prediction logic
     return "Stroke Detected" if image else "No Stroke Detected"
 
-# Load your pre-trained model (ensure it's properly compiled)
+import os
+import requests
+import tensorflow as tf
+
 def load_model():
     url = "https://drive.google.com/uc?export=download&id=1Rs57tU96OtOIu4iUvLn4Ml8RYmYNJW6W"
     response = requests.get(url)
     response.raise_for_status()  # Raise error if download fails
     
-    model_file = 'model.h5'
-    with open(model_file, 'wb') as f:
+    model_dir = 'saved_model'  # Temporary folder to save the model
+    os.makedirs(model_dir, exist_ok=True)
+
+    # Write the content to a directory (SavedModel format)
+    with open(os.path.join(model_dir, 'saved_model.pb'), 'wb') as f:
         f.write(response.content)
 
-    model = tf.keras.models.load_model(model_file)
-    os.remove(model_file)  # Clean up the model file after loading
+    # Load the model (SavedModel format)
+    model = tf.keras.models.load_model(model_dir)
+
+    # Clean up the model files after loading
+    for file in os.listdir(model_dir):
+        os.remove(os.path.join(model_dir, file))
+    os.rmdir(model_dir)  # Remove the directory as well
+    
     return model
+
 
 # Function to preprocess the image step-by-step
 def preprocess_image(image):
