@@ -84,9 +84,12 @@ def predict_stroke(image):
 
 # Load your pre-trained model (ensure it's properly compiled)
 def load_model():
-    model = tf.keras.models.load_model('brain_stroke_model.keras')
-    return model
+    url = "https://drive.google.com/uc?export=download&id=1Rs57tU96OtOIu4iUvLn4Ml8RYmYNJW6W"
+    response = requests.get(url)
+    response.raise_for_status()  # Raise error if download fails
 
+    model = tf.keras.models.load_model(BytesIO(response.content))
+    return model
 # Function to preprocess the image step-by-step
 def preprocess_image(image):
     # Stage 1: Grayscale Conversion
