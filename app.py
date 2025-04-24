@@ -87,27 +87,29 @@ import os
 import requests
 import tensorflow as tf
 
+import os
+import requests
+import tensorflow as tf
+
 def load_model():
     url = "https://drive.google.com/uc?export=download&id=1Rs57tU96OtOIu4iUvLn4Ml8RYmYNJW6W"
     response = requests.get(url)
     response.raise_for_status()  # Raise error if download fails
+
+    model_path = "model.h5"
     
-    model_dir = 'saved_model'  # Temporary folder to save the model
-    os.makedirs(model_dir, exist_ok=True)
-
-    # Write the content to a directory (SavedModel format)
-    with open(os.path.join(model_dir, 'saved_model.pb'), 'wb') as f:
+    # Save the downloaded model to disk
+    with open(model_path, 'wb') as f:
         f.write(response.content)
-
-    # Load the model (SavedModel format)
-    model = tf.keras.models.load_model(model_dir)
-
-    # Clean up the model files after loading
-    for file in os.listdir(model_dir):
-        os.remove(os.path.join(model_dir, file))
-    os.rmdir(model_dir)  # Remove the directory as well
+    
+    # Load the model
+    model = tf.keras.models.load_model(model_path)
+    
+    # Optionally delete the file after loading
+    os.remove(model_path)
     
     return model
+
 
 
 # Function to preprocess the image step-by-step
