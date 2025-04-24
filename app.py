@@ -8,6 +8,8 @@ import sqlite3
 import hashlib
 from datetime import datetime
 import pandas as pd
+import requests
+
 
 
 # Initialize database connection
